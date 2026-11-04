@@ -113,8 +113,8 @@ const children = [
   bullet([["On iPhone: ", { bold: true }], `the model converts to Apple's format (Core ML). It is ${sizeMb} MB and takes about ${medianMs} thousandths of a second per photo on an Apple M4 chip.`]),
   bullet([["Biggest limit: ", { bold: true }], "only five photos to learn from. The few remaining mistakes are on photo types it barely saw, like the view from above in photo 4. More real photos will fix this better than more tweaking."]),
 
-  h1("1. How we know the right answers"),
-  para("The photos came without correct counts, so I counted every plank by hand, zoomed in 3 times. A second person counted separately and we agreed: 54, 27, 76, 18 and 60. We used these rules, and the training examples follow them too:"),
+  h1("1. How I set the right answers"),
+  para("The photos came without correct counts, so I counted every plank by hand, zoomed in 3 times. As a check, a friend counted them separately and got the same totals: 54, 27, 76, 18 and 60. I counted with these rules, and every training example follows them:"),
   bullet([["One plank = one front end, ", { bold: true }], "including the shiny strip (lip) on top of it. The lip belongs to the plank; it is not a separate plank."]),
   bullet([["Every plank end has two holes. ", { bold: true }], "Two holes side by side confirm a plank."]),
   bullet([["Planks that stick out or sit back still count, ", { bold: true }], "even when their holes are hidden behind the plank next to them."]),
