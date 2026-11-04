@@ -103,12 +103,20 @@ def drop_contained(boxes: np.ndarray, scores: np.ndarray, limit: float = 0.7) ->
     return boxes[sorted(kept, key=lambda i: (boxes[i][1], boxes[i][0]))]
 
 
+def centre_inside(box: np.ndarray, columns: list) -> bool:
+    """The user marked these columns; a plank whose centre falls outside them is not counted."""
+    centre = (float(box[0] + box[2]) / 2, float(box[1] + box[3]) / 2)
+    return any(cv2.pointPolygonTest(np.asarray(q, np.float32), centre, False) >= 0 for q in columns)
+
+
 def predict(model: YOLO, image: np.ndarray, columns: list, conf: float = 0.25) -> list[Quad]:
     """Plank boxes in full-image coordinates, top to bottom."""
-    crop, (ox, oy) = roi_crop(image, columns)
+    crop, offset = roi_crop(image, columns)
     result = model.predict(crop, imgsz=IMGSZ, conf=conf, iou=0.5, max_det=500, verbose=False)[0]
     boxes = drop_contained(result.boxes.xyxy.cpu().numpy(), result.boxes.conf.cpu().numpy())
+    boxes = boxes + np.tile(np.asarray(offset, np.float32), 2)
     return [
-        as_quad([[x0 + ox, y0 + oy], [x1 + ox, y0 + oy], [x1 + ox, y1 + oy], [x0 + ox, y1 + oy]])
+        as_quad([[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
         for x0, y0, x1, y1 in boxes
+        if centre_inside(np.array([x0, y0, x1, y1]), columns)
     ]

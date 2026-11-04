@@ -33,3 +33,11 @@ def test_roi_crop_greys_outside_the_stack():
     assert (ox, oy) == crop_box([column], image.shape)[:2]
     assert crop[0, 0].tolist() == [114, 114, 114]
     assert crop[200 - oy, 200 - ox].tolist() == [255, 255, 255]
+
+
+def test_only_boxes_centred_in_a_marked_column_count():
+    from plank_counter.yolo import centre_inside
+
+    column = [[0, 0], [100, 0], [100, 100], [0, 100]]
+    assert centre_inside(np.array([10, 10, 90, 30]), [column])
+    assert not centre_inside(np.array([90, 110, 150, 130]), [column])
