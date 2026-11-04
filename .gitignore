@@ -1,0 +1,12 @@
+# Test images are confidential (Ready to Bloom) — never commit them or anything derived from them
+data/
+outputs/
+runs/
+*.mlpackage
+*.pt
+*.onnx
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.DS_Store

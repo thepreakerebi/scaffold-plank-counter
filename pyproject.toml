@@ -1,0 +1,35 @@
+[project]
+name = "plank-counter"
+version = "0.1.0"
+description = "Count scaffold steel planks in a photo — classical and YOLO approaches"
+readme = "README.md"
+authors = [
+    { name = "Elvis Preye Kerebi", email = "kerebipreye@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.4",
+    "opencv-python-headless>=5.0.0.93",
+    "scipy>=1.18.1",
+    "ultralytics>=8.4.202",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.12,<0.11.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]
+
+[project.scripts]
+plank-count = "plank_counter.cli:main"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
