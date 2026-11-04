@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, AlignmentType,
-  HeadingLevel, WidthType, ShadingType, BorderStyle, LevelFormat, PageBreak, Footer, PageNumber,
+  HeadingLevel, WidthType, ShadingType, BorderStyle, LevelFormat, Footer, PageNumber,
 } = require("docx");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -51,9 +51,9 @@ const bullet = (parts) =>
     spacing: { after: 60 },
     children: (Array.isArray(parts) ? parts : [parts]).map((p) => (typeof p === "string" ? run(p) : run(p[0], p[1]))),
   });
-const numbered = (parts) =>
+const numbered = (parts, instance = 1) =>
   new Paragraph({
-    numbering: { reference: "steps", level: 0 },
+    numbering: { reference: "steps", level: 0, instance },
     spacing: { after: 60 },
     children: (Array.isArray(parts) ? parts : [parts]).map((p) => (typeof p === "string" ? run(p) : run(p[0], p[1]))),
   });
@@ -161,12 +161,12 @@ const children = [
 
   h1("5. Putting it in the iOS app"),
   h2("The model file"),
-  rich([`The final model converts to Apple's format, `, ["Core ML", { bold: true }], `: one ${sizeMb} MB file that runs on the iPhone's built-in AI chip (the Neural Engine). It takes about ${medianMs} ms per photo on an M4; recent iPhones have a similar chip, so it should be about as fast, though that still needs testing on a real phone. The converted file gives exactly the same counts as the original model.`]),
+  rich([`The final model converts to Apple's format, `, ["Core ML", { bold: true }], `: one ${sizeMb} MB file that runs on the iPhone's built-in AI chip (the Neural Engine). It takes about ${medianMs} ms per photo on an M4; recent iPhones have a similar chip, so it should be about as fast, though that still needs testing on a real phone. On these five photos the iPhone version matched the original model exactly or within 1 plank on four photos, and was 3 off on photo 4. The small gap comes from how it prepares the photo (a fixed square size) and how it filters overlapping boxes; these settings should be matched and checked on new photos before release.`]),
   h2("How it would run in CountX"),
-  numbered("The user takes a photo and marks the stack columns (CountX's existing \"select range\" screen, with one shape per column)."),
-  numbered("The app greys out everything outside and runs the model through Apple's Vision framework."),
-  numbered("The app applies the three tidy-up rules: about 40 lines of Swift, no extra model."),
-  numbered("The app shows numbered boxes and the total. The user taps to add or remove a plank, as CountX already does."),
+  numbered("The user takes a photo and marks the stack columns (CountX's existing \"select range\" screen, with one shape per column).", 2),
+  numbered("The app greys out everything outside and runs the model through Apple's Vision framework.", 2),
+  numbered("The app applies the three tidy-up rules: about 40 lines of Swift, no extra model.", 2),
+  numbered("The app shows numbered boxes and the total. The user taps to add or remove a plank, as CountX already does.", 2),
   h2("What it needs to work on real sites"),
   bullet([["More real photos: ", { bold: true }], "start with 50–100 stack photos from different sites, lighting and angles, including views from above and messy stacks like photos 2 and 4. Label them with the rules in section 1."]),
   bullet([["Learn from users' fixes: ", { bold: true }], "every time a user taps to add or remove a plank, that is a free correct answer. Save it (with permission) and use it to retrain the model regularly."]),
@@ -179,7 +179,6 @@ const children = [
   bullet([["Code: ", { bold: true }], "a Python project with tests. One command runs each part: plank-count classical, plank-count yolo, plank-count coreml. Setup steps are in the README. Your photos are not inside the code, since they are confidential."]),
   bullet([["iPhone model: ", { bold: true }], "the final model file in Apple's Core ML format."]),
 
-  new Paragraph({ children: [new PageBreak()] }),
   h1("Appendix: marked photos"),
   para("Each photo was counted by the model that had never seen it. Boxes are numbered top to bottom; the total is in the dark bar."),
   ...IMAGES.flatMap((n, i) =>
