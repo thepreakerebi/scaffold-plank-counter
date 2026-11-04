@@ -1,0 +1,13 @@
+{
+  "_rule": "Hand labels for the staggered images. Per column, the [top, bottom] pixel rows of every plank end, A bright flange band above a holed face belongs to that same plank (channel profile), not to a separate plank. Every plank end carries two holes; cut-off planks at the frame edge count. Corrected by Elvis. Box sides come from the column outline in columns.json.",
+  "plank2": [
+    [[210, 240], [240, 266], [268, 302], [302, 323], [323, 363], [363, 378], [378, 397], [397, 414], [414, 427], [427, 447]],
+    [[230, 262], [262, 287], [287, 312], [312, 337], [338, 382], [382, 402], [402, 421], [421, 433], [433, 447]],
+    [[213, 251], [252, 290], [290, 321], [322, 350], [350, 389], [390, 417], [417, 435], [435, 447]]
+  ],
+  "plank4": [
+    [[525, 561], [562, 611], [612, 629], [630, 655], [655, 670], [670, 688]],
+    [[510, 555], [557, 605], [605, 628], [630, 649], [650, 672], [672, 690]],
+    [[530, 567], [570, 592], [595, 641], [645, 686], [686, 694], [694, 700]]
+  ]
+}

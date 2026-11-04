@@ -46,6 +46,25 @@ def band_quads(ys: np.ndarray, width: int, matrix: np.ndarray) -> list[Quad]:
     ]
 
 
+def x_on_edge(top: np.ndarray, bottom: np.ndarray, y: float) -> float:
+    """x where the edge from top to bottom crosses row y."""
+    t = (y - top[1]) / max(bottom[1] - top[1], 1e-6)
+    return float(top[0] + t * (bottom[0] - top[0]))
+
+
+def row_band(quad: Quad, y0: float, y1: float) -> Quad:
+    """The slice of a column outline between image rows y0 and y1."""
+    tl, tr, br, bl = quad
+    return as_quad(
+        [
+            [x_on_edge(tl, bl, y0), y0],
+            [x_on_edge(tr, br, y0), y0],
+            [x_on_edge(tr, br, y1), y1],
+            [x_on_edge(tl, bl, y1), y1],
+        ]
+    )
+
+
 def bbox(quad: Quad) -> tuple[float, float, float, float]:
     """Axis-aligned x0, y0, x1, y1."""
     (x0, y0), (x1, y1) = quad.min(axis=0), quad.max(axis=0)
