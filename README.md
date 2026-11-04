@@ -16,6 +16,8 @@ The user marks each stack column with four corners, the same as CountX's range s
 uv sync
 # put the five test images in data/raw/plank1.jpg … plank5.jpg (confidential, not in git)
 uv run plank-count classical   # annotated images → outputs/classical/, table → outputs/classical.md
+uv run plank-count yolo        # 5 held-out YOLO models → outputs/yolo/, outputs/yolo.md
+uv run --with "numpy<2.3" plank-count coreml   # final model → Core ML (coremltools breaks on NumPy ≥ 2.3)
 uv run pytest                  # synthetic tests, no photos needed
 ```
 

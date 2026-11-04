@@ -18,6 +18,14 @@ from plank_counter import dataset, yolo
 from plank_counter.roi import roi_crop
 
 FOLD = "all"  # shipped model: trained on every labelled photo
+EXPORT_COMMAND = 'uv run --with "numpy<2.3" plank-count coreml'
+
+
+def check_numpy() -> None:
+    """coremltools 9 breaks on NumPy >= 2.3 (scalar casts); Ultralytics on macOS needs a newer
+    NumPy for training, so the export runs with an older NumPy layered on top."""
+    if tuple(int(p) for p in np.__version__.split(".")[:2]) >= (2, 3):
+        raise RuntimeError(f"NumPy {np.__version__} breaks the Core ML converter. Run: {EXPORT_COMMAND}")
 
 
 def final_weights() -> Path:
@@ -27,6 +35,7 @@ def final_weights() -> Path:
 
 def export(half: bool = True) -> Path:
     """Write the .mlpackage (FP16 by default: half the size, same accuracy on the ANE)."""
+    check_numpy()
     path = YOLO(str(final_weights())).export(format="coreml", imgsz=yolo.IMGSZ, nms=True, half=half)
     return Path(path)
 
