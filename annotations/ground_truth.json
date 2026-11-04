@@ -1,8 +1,42 @@
 {
-  "_rule": "Count a plank when its end face is visible enough to identify (about half its height or more) inside the marked stack. Counted by eye at 3x zoom; columns left to right. Stacks outside the marked range (background, side views) are excluded.",
-  "plank1": {"count": 54, "columns": [15, 14, 13, 12], "note": "Bottom of all columns cut by the frame; top-surface holes are not ends."},
-  "plank2": {"count": 25, "columns": [9, 8, 8], "note": "Staggered planks of mixed thickness; top faces washed out by glare; one partly cut plank at the bottom of the left and middle columns. Ambiguous by about +/-2."},
-  "plank3": {"count": 76, "columns": [19, 19, 19, 19], "note": "Bottom row sits under the watermark. Separate stack on the right edge excluded (cut by the frame)."},
-  "plank4": {"count": 14, "columns": [5, 5, 4], "note": "Mostly a top view; only the ends at the bottom are countable. Thin planks stacked tightly. Ambiguous by about +/-1."},
-  "plank5": {"count": 60, "columns": [20, 20, 20], "note": "Long side faces on the right are the same planks seen side-on, so not counted."}
+  "_rule": "Count every plank whose end face can be identified inside the stack. Counted independently by two people (Elvis and a second reviewer) who agreed; images 1, 3 and 5 also matched the model-free hole-pair overlay.",
+  "plank1": {
+    "count": 54,
+    "columns": [
+      15,
+      14,
+      13,
+      12
+    ],
+    "note": "Bottom of all columns cut by the frame; top-surface holes are not ends."
+  },
+  "plank2": {
+    "count": 27,
+    "columns": null,
+    "note": "Staggered planks of mixed thickness, top faces washed out by glare, planks cut by the bottom edge. Hardest image."
+  },
+  "plank3": {
+    "count": 76,
+    "columns": [
+      19,
+      19,
+      19,
+      19
+    ],
+    "note": "Bottom row sits under the watermark. Separate stack on the right edge excluded (cut by the frame)."
+  },
+  "plank4": {
+    "count": 18,
+    "columns": null,
+    "note": "Mostly a top view; thin planks stacked tightly, several only partly visible."
+  },
+  "plank5": {
+    "count": 60,
+    "columns": [
+      20,
+      20,
+      20
+    ],
+    "note": "Long side faces on the right are the same planks seen side-on, so not counted."
+  }
 }
