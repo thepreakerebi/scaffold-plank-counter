@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from plank_counter import classical
-from plank_counter.holes import band_edges, group_rows, is_pair
+from plank_counter.holes import group_rows, is_pair, seam_edges
 from plank_counter.report import Row, summary
 from plank_counter.seams import cut_rows
 
@@ -64,9 +64,11 @@ def test_is_pair_needs_two_spread_holes():
     assert not is_pair(np.array([[50, 5]], float), width=100)
 
 
-def test_band_edges_bracket_each_row():
-    edges = band_edges(np.array([15.0, 45.0, 75.0]), height=90)
-    assert edges.tolist() == [0.0, 30.0, 60.0, 90.0]
+def test_seam_edges_snap_to_the_dark_gaps():
+    profile = np.zeros(91)
+    profile[[2, 31, 58, 88]] = 1.0  # seams, not exactly halfway between hole rows
+    edges = seam_edges(np.array([15.0, 45.0, 75.0]), profile)
+    assert edges.tolist() == [2, 31, 58, 88]
 
 
 def test_cut_rows_drops_slivers():

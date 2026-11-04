@@ -58,6 +58,26 @@ def yolo_detector(name: str) -> Detector:
     return lambda image, columns: (yolo.predict(model, image, columns), False)
 
 
+def hybrid_detector(name: str) -> Detector:
+    """Per column: the classical count when its two signals agree (fast, exact on clean stacks),
+    otherwise the YOLO boxes in that column (handles staggered and shifted planks)."""
+    from plank_counter.geometry import bbox
+    from plank_counter.yolo import column_of
+
+    learned = yolo_detector(name)
+
+    def detect(image: np.ndarray, columns: list) -> tuple[list[Quad], bool]:
+        boxes, _ = learned(image, columns)
+        planks = []
+        for i, result in enumerate(classical.detect(image, columns)):
+            planks += (
+                result.planks if result.agrees else [b for b in boxes if column_of(np.array(bbox(b)), columns) == i]
+            )
+        return planks, False
+
+    return detect
+
+
 def run_coreml() -> None:
     from plank_counter import export
 
@@ -73,13 +93,14 @@ def run_coreml() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Count scaffold steel planks in the test images.")
-    parser.add_argument("method", choices=["classical", "yolo", "coreml"])
+    parser.add_argument("method", choices=["classical", "yolo", "hybrid", "coreml"])
     args = parser.parse_args()
     if args.method == "coreml":
         return run_coreml()
     detectors = {
         "classical": lambda name: classical_detector,
         "yolo": yolo_detector,
+        "hybrid": hybrid_detector,
     }
     rows = [evaluate(name, args.method, detectors[args.method](name)) for name in dataset.image_names()]
     table = markdown(rows, f"{args.method} counter")

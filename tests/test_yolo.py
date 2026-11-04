@@ -35,9 +35,24 @@ def test_roi_crop_greys_outside_the_stack():
     assert crop[200 - oy, 200 - ox].tolist() == [255, 255, 255]
 
 
-def test_only_boxes_centred_in_a_marked_column_count():
-    from plank_counter.yolo import centre_inside
+LEFT = [[0, 0], [100, 0], [100, 100], [0, 100]]
+RIGHT = [[100, 0], [200, 0], [200, 100], [100, 100]]
 
-    column = [[0, 0], [100, 0], [100, 100], [0, 100]]
-    assert centre_inside(np.array([10, 10, 90, 30]), [column])
-    assert not centre_inside(np.array([90, 110, 150, 130]), [column])
+
+def test_column_of_uses_the_box_centre():
+    from plank_counter.yolo import column_of
+
+    assert column_of(np.array([10, 10, 90, 30]), [LEFT, RIGHT]) == 0
+    assert column_of(np.array([110, 10, 190, 30]), [LEFT, RIGHT]) == 1
+    assert column_of(np.array([90, 110, 150, 130]), [LEFT, RIGHT]) is None
+
+
+def test_side_by_side_halves_merge_within_a_column_only():
+    from plank_counter.yolo import merge_same_row
+
+    halves = np.array([[0, 10, 50, 30], [50, 11, 100, 31], [0, 32, 100, 50]], float)
+    assert merge_same_row(halves, [LEFT]).tolist() == [[0, 10, 100, 31], [0, 32, 100, 50]]
+    stacked = np.array([[0, 10, 100, 22], [0, 18, 100, 30]], float)  # thin planks overlapping at the seam
+    assert len(merge_same_row(stacked, [LEFT])) == 2
+    neighbours = np.array([[10, 10, 90, 30], [110, 10, 190, 30]], float)  # same rows, different columns
+    assert len(merge_same_row(neighbours, [LEFT, RIGHT])) == 2

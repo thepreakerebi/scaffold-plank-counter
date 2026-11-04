@@ -58,10 +58,16 @@ def plank_rows(patch: np.ndarray) -> np.ndarray:
     return away_from_edges(np.asarray([r[:, 1].mean() for r in rows if is_pair(r, width)]), height)
 
 
-def band_edges(rows: np.ndarray, height: int) -> np.ndarray:
-    """Plank band edges halfway between hole rows; outer edges extend half a pitch, clipped to the patch."""
+def seam_edges(rows: np.ndarray, profile: np.ndarray) -> np.ndarray:
+    """Plank edges on the real gaps between planks.
+
+    Between two neighbouring hole rows, the edge is the strongest seam (dark line) in the
+    seam profile. Above the first and below the last row, search up to one pitch away.
+    So each box runs seam to seam: top flange, face and both holes inside, like a person draws it.
+    """
     if len(rows) == 0:
         return np.asarray([])
+    height = len(profile)
     pitch = float(np.median(np.diff(rows))) if len(rows) > 1 else float(height)
-    mids = (rows[:-1] + rows[1:]) / 2
-    return np.concatenate([[max(rows[0] - pitch / 2, 0)], mids, [min(rows[-1] + pitch / 2, height)]])
+    bounds = np.concatenate([[max(rows[0] - pitch, 0)], rows, [min(rows[-1] + pitch, height - 1)]]).astype(int)
+    return np.asarray([a + int(np.argmax(profile[a : b + 1])) for a, b in zip(bounds[:-1], bounds[1:], strict=True)])

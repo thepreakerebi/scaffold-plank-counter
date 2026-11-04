@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from plank_counter.geometry import Quad, as_quad, band_quads, warp
-from plank_counter.holes import band_edges, plank_rows
+from plank_counter.holes import plank_rows, seam_edges
 from plank_counter.seams import cut_rows, dominant_period, seam_profile, seam_rows
 
 
@@ -29,17 +29,17 @@ class ColumnResult:
         return abs(self.count - self.seam_count) <= 1
 
 
-def seam_count(patch: np.ndarray) -> int:
-    profile = seam_profile(patch)
+def seam_count(profile: np.ndarray) -> int:
     period = dominant_period(profile)
-    return len(cut_rows(patch.shape[0], seam_rows(profile, period), period)) - 1
+    return len(cut_rows(len(profile), seam_rows(profile, period), period)) - 1
 
 
 def detect_column(image: np.ndarray, quad) -> ColumnResult:
     patch, matrix = warp(image, as_quad(quad))
-    edges = band_edges(plank_rows(patch), patch.shape[0])
+    profile = seam_profile(patch)
+    edges = seam_edges(plank_rows(patch), profile)
     planks = band_quads(edges, patch.shape[1], matrix) if len(edges) else []
-    return ColumnResult(planks=planks, seam_count=seam_count(patch))
+    return ColumnResult(planks=planks, seam_count=seam_count(profile))
 
 
 def detect(image: np.ndarray, columns: list) -> list[ColumnResult]:
