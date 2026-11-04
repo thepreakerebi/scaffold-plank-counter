@@ -1,11 +1,13 @@
 """YOLO plank detector trained from very few photos.
 
 Small-data choices:
-- start from COCO-pretrained YOLO11s (edges, corners, metal texture already learned)
+- start from COCO-pretrained YOLO11n (edges, corners, metal texture already learned);
+  YOLO11s memorised the four training photos faster and scored worse (92.8% vs 98.3%)
 - every training photo is repeated so one epoch sees many random augmentations:
-  mild zoom/shift, small rotation/perspective, colour jitter, left-right flips
-- no mosaic and little zoom-in: those slice planks at the cut, and a sliced plank
-  labelled "plank" teaches the model to fire on half planks
+  mosaic, scale, small rotation/perspective, colour jitter, left-right flips
+- mosaic stays on: without it each model sees four photos in one layout and memorises
+  them (image 4 fell from 17 to 11). The half planks mosaic causes are removed after
+  inference by drop_contained and merge_same_row.
 - the model only sees the marked stack (roi_crop), exactly as at inference
 """
 
@@ -20,14 +22,14 @@ from plank_counter.geometry import Quad, as_quad, bbox
 from plank_counter.roi import roi_crop
 
 RUNS = dataset.ROOT / "runs"
-BASE_WEIGHTS = "yolo11s.pt"
+BASE_WEIGHTS = "yolo11n.pt"
 IMGSZ = 640
 
 AUGMENT = dict(
-    mosaic=0.0,  # never stitch crops: it slices planks
-    close_mosaic=0,
-    scale=0.2,  # mostly whole planks stay whole
-    translate=0.05,
+    mosaic=1.0,
+    close_mosaic=10,  # last 10 epochs on whole photos
+    scale=0.5,
+    translate=0.1,
     degrees=5.0,
     perspective=0.0005,
     fliplr=0.5,
