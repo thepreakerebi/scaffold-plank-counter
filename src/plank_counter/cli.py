@@ -58,10 +58,25 @@ def yolo_detector(name: str) -> Detector:
     return lambda image, columns: (yolo.predict(model, image, columns), False)
 
 
+def run_coreml() -> None:
+    from plank_counter import export
+
+    package = export.export()
+    latency = export.coreml_latency(package)
+    text = (
+        f"### Core ML export\n\n{package.name}: {export.size_mb(package):.1f} MB (FP16, NMS included), "
+        f"median {latency['median_ms']:.1f} ms, p90 {latency['p90_ms']:.1f} ms per image on this Mac (CPU+GPU+ANE)"
+    )
+    (dataset.OUTPUTS / "coreml.md").write_text(text + "\n")
+    print(text)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Count scaffold steel planks in the test images.")
-    parser.add_argument("method", choices=["classical", "yolo"])
+    parser.add_argument("method", choices=["classical", "yolo", "coreml"])
     args = parser.parse_args()
+    if args.method == "coreml":
+        return run_coreml()
     detectors = {
         "classical": lambda name: classical_detector,
         "yolo": yolo_detector,

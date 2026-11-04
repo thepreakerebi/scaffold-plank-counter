@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "coremltools>=9.0",
     "numpy>=2.5.4",
     "opencv-python-headless>=5.0.0.93",
     "scipy>=1.18.1",
